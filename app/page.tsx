@@ -4,70 +4,94 @@ import { useRef, useState } from "react";
 import TextDisplay from "../components/TextDisplay";
 import Keyboard from "../components/Keyboard";
 import KeyboardTools from "../components/KeyboardTools";
+import TextStyleTools from "../components/TextStyleTools";
 import styles from "../styles/Page.module.css";
 
 export default function Page() {
-  const [text, setText] = useState("");
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const [language, setLanguage] = useState("EN");
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const focusEditor = () => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  };
 
   const handleAddChar = (char: string) => {
-    const textarea = textareaRef.current;
-
-    if (!textarea) {
-      setText((prev) => prev + char);
-      return;
-    }
-
-    textarea.focus();
-
-    const start = textarea.selectionStart ?? text.length;
-    const end = textarea.selectionEnd ?? text.length;
-
-    const newText = text.slice(0, start) + char + text.slice(end);
-    setText(newText);
-
-    requestAnimationFrame(() => {
-      const newCursor = start + char.length;
-      textarea.focus();
-      textarea.setSelectionRange(newCursor, newCursor);
-    });
+    focusEditor();
+    document.execCommand("insertText", false, char);
   };
 
   const handleBackspace = () => {
-    const textarea = textareaRef.current;
+    focusEditor();
+    const selection = window.getSelection();
 
-    if (!textarea) {
-      setText((prev) => prev.slice(0, -1));
+    if (selection && !selection.isCollapsed) {
+      document.execCommand("delete", false);
       return;
     }
 
-    textarea.focus();
+    document.execCommand("delete", false);
+  };
 
-    const start = textarea.selectionStart ?? 0;
-    const end = textarea.selectionEnd ?? 0;
+  const applyAlignment = (direction: "left" | "center" | "right") => {
+    focusEditor();
 
-    if (start !== end) {
-      const newText = text.slice(0, start) + text.slice(end);
-      setText(newText);
+    if (direction === "left") {
+      document.execCommand("justifyLeft");
+    } else if (direction === "center") {
+      document.execCommand("justifyCenter");
+    } else {
+      document.execCommand("justifyRight");
+    }
+  };
 
-      requestAnimationFrame(() => {
-        textarea.focus();
-        textarea.setSelectionRange(start, start);
-      });
+  const applyFontName = (fontName: string) => {
+    focusEditor();
+    document.execCommand("fontName", false, fontName);
+  };
+
+  const applyFontColor = (color: string) => {
+    focusEditor();
+    document.execCommand("foreColor", false, color);
+  };
+
+  const applyUnderline = () => {
+    focusEditor();
+    document.execCommand("underline");
+  };
+
+  const applyFontSize = (size: string) => {
+    focusEditor();
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+
+    if (selection.isCollapsed) {
+      const span = document.createElement("span");
+      span.style.fontSize = size;
+      span.innerHTML = "&#8203;";
+      range.insertNode(span);
+
+      const newRange = document.createRange();
+      newRange.setStart(span.firstChild || span, 1);
+      newRange.collapse(true);
+
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+      focusEditor();
       return;
     }
 
-    if (start === 0) return;
+    const contents = range.extractContents();
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    span.appendChild(contents);
+    range.insertNode(span);
 
-    const newText = text.slice(0, start - 1) + text.slice(start);
-    setText(newText);
-
-    requestAnimationFrame(() => {
-      const newCursor = start - 1;
-      textarea.focus();
-      textarea.setSelectionRange(newCursor, newCursor);
-    });
+    selection.removeAllRanges();
   };
 
   return (
@@ -75,19 +99,25 @@ export default function Page() {
       <div className={styles.wrapper}>
         <h1 className={styles.title}>Visual Text Editor</h1>
 
-        <TextDisplay
-          text={text}
-          setText={setText}
-          textareaRef={textareaRef}
-        />
+        <TextDisplay editorRef={editorRef} />
 
         <KeyboardTools language={language} setLanguage={setLanguage} />
 
-        <Keyboard
-          onAddChar={handleAddChar}
-          onBackspace={handleBackspace}
-          language={language}
-        />
+        <div className={styles.bottomArea}>
+          <Keyboard
+            onAddChar={handleAddChar}
+            onBackspace={handleBackspace}
+            language={language}
+          />
+
+          <TextStyleTools
+            onAlign={applyAlignment}
+            onFontSize={applyFontSize}
+            onFontName={applyFontName}
+            onFontColor={applyFontColor}
+            onUnderline={applyUnderline}
+          />
+        </div>
       </div>
     </main>
   );
