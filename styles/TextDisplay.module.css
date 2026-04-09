@@ -1,7 +1,7 @@
 .container {
   width: 100%;
-  text-align: center;
-  margin-top: 20px;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .editor {
@@ -21,4 +21,11 @@
   content: attr(data-placeholder);
   color: #999;
   pointer-events: none;
+}
+
+.editor mark {
+  background-color: yellow;
+  color: black;
+  padding: 0 2px;
+  border-radius: 4px;
 }

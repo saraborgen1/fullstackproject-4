@@ -1,22 +1,24 @@
 .container {
   width: 100%;
+  max-width: 760px;
   display: flex;
   justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  margin: 0 auto 14px auto;
 }
 
 .toolButton {
-  min-width: 120px;
-  height: 46px;
+  min-width: 88px;
+  height: 38px;
   border: 1px solid #555;
-  border-radius: 12px;
+  border-radius: 10px;
   background-color: white;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 15px;
   transition: 0.2s;
+  padding: 0 8px;
 }
 
 .toolButton:hover {
@@ -25,5 +27,17 @@
 
 .active {
   background-color: #e8e8e8;
+  border-color: #333;
   font-weight: 600;
+}
+
+.searchInput {
+  width: 165px;
+  height: 38px;
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
 }

@@ -2,7 +2,18 @@
 
 import styles from "../styles/KeyboardTools.module.css";
 
-export default function KeyboardTools({ language, setLanguage }) {
+export default function KeyboardTools({
+  language,
+  setLanguage,
+  onDeleteAll,
+  onUndo,
+  onSave,
+  onSaveAs,
+  onNewFile,
+  searchTerm,
+  setSearchTerm,
+  setActiveInput,
+}) {
   return (
     <div className={styles.container}>
       <button
@@ -10,6 +21,7 @@ export default function KeyboardTools({ language, setLanguage }) {
         className={`${styles.toolButton} ${
           language === "EN" ? styles.active : ""
         }`}
+        onMouseDown={(e) => e.preventDefault()}
         onClick={() => setLanguage("EN")}
       >
         English
@@ -20,6 +32,7 @@ export default function KeyboardTools({ language, setLanguage }) {
         className={`${styles.toolButton} ${
           language === "HE" ? styles.active : ""
         }`}
+        onMouseDown={(e) => e.preventDefault()}
         onClick={() => setLanguage("HE")}
       >
         עברית
@@ -30,10 +43,65 @@ export default function KeyboardTools({ language, setLanguage }) {
         className={`${styles.toolButton} ${
           language === "EMOJI" ? styles.active : ""
         }`}
+        onMouseDown={(e) => e.preventDefault()}
         onClick={() => setLanguage("EMOJI")}
       >
         Emoji
       </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onDeleteAll}
+      >
+        Clear
+      </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onUndo}
+      >
+        Undo
+      </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onSave}
+      >
+        Save
+      </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onSaveAs}
+      >
+        Save As
+      </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onNewFile}
+      >
+        New
+      </button>
+
+      <input
+        type="text"
+        className={styles.searchInput}
+        placeholder="Search..."
+        value={searchTerm}
+        onFocus={() => setActiveInput("search")}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 .keyboardContainer {
   width: 100%;
+  max-width: 760px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 0;
   margin-bottom: 20px;
 }
 
@@ -14,6 +15,7 @@
   flex-direction: column;
   gap: 10px;
   align-items: center;
+  width: 100%;
 }
 
 .keyboardRow {
@@ -80,4 +82,25 @@
 
 .backspaceBtn:hover {
   background-color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .keyBtn {
+    min-width: 46px;
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .specialBtn,
+  .backspaceBtn {
+    min-width: 78px;
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .spaceBtn {
+    width: 260px;
+    height: 46px;
+    font-size: 16px;
+  }
 }

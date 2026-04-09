@@ -1,54 +1,37 @@
-.container {
-  width: 260px;
-  min-width: 260px;
-  background-color: white;
-  border: 1px solid #555;
-  border-radius: 14px;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-.title {
-  margin: 0 0 14px 0;
-  text-align: center;
-}
-
-.group {
+.toolsRow {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  flex-direction: column; /* מסדר את הכלים בטור אנכי */
+  gap: 16px;
+  width: auto;            /* חשוב: מבטל את ה-100% כדי שלא ידחף את המקלדת */
+  min-width: 160px;
 }
 
-.label {
-  font-size: 14px;
-  font-weight: 600;
-}
 
-.buttonRow {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
 
-.buttonRow button,
-.group button,
-.group select,
-.group input[type="color"] {
-  height: 42px;
+.toolGroup button,
+.toolGroup select,
+.toolGroup input[type="color"] {
+  height: 44px;
+  min-width: 120px;
   border: 1px solid #555;
   border-radius: 10px;
   background-color: white;
   cursor: pointer;
   font-size: 14px;
   padding: 0 10px;
+  box-sizing: border-box;
 }
 
-.group select {
-  width: 100%;
+.toolGroup select {
+  min-width: 150px;
 }
 
-.group input[type="color"] {
-  width: 100%;
+.toolGroup input[type="color"] {
+  width: 90px;
   padding: 4px;
+}
+
+.container {
+  width: 260px;
+  min-width: 260px;
 }

@@ -48,6 +48,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={char}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -57,6 +58,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
               <button
                 type="button"
                 className={styles.backspaceBtn}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={onBackspace}
               >
                 ⌫
@@ -69,6 +71,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={char}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -82,6 +85,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={char}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -93,6 +97,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
               <button
                 type="button"
                 className={styles.specialBtn}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => setIsUppercase((prev) => !prev)}
               >
                 {isUppercase ? "ABC" : "abc"}
@@ -103,6 +108,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={char}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -116,6 +122,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={char}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -133,6 +140,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                   type="button"
                   key={`${rowIndex}-${char}`}
                   className={styles.keyBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onAddChar(char)}
                 >
                   {char}
@@ -143,6 +151,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                 <button
                   type="button"
                   className={styles.backspaceBtn}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={onBackspace}
                 >
                   ⌫
@@ -160,6 +169,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
                     type="button"
                     key={`${rowIndex}-${char}`}
                     className={styles.keyBtn}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => onAddChar(char)}
                   >
                     {char}
@@ -172,6 +182,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
               <button
                 type="button"
                 className={styles.backspaceBtn}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={onBackspace}
               >
                 ⌫
@@ -184,6 +195,7 @@ export default function Keyboard({ onAddChar, onBackspace, language }) {
           <button
             type="button"
             className={styles.spaceBtn}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => onAddChar(" ")}
           >
             Space
