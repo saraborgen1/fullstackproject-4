@@ -36,7 +36,7 @@ export default function Page() {
 
   const focusEditor = () => {
     setActiveInput("editor");
-  
+
     if (!editorRef.current) return;
 
     editorRef.current.focus();
@@ -336,7 +336,8 @@ export default function Page() {
     if (cleanFont.includes("georgia")) return "Georgia";
     if (cleanFont.includes("garamond")) return "Garamond";
     if (cleanFont.includes("courier new")) return "Courier New";
-    if (cleanFont.includes("brush script mt")) return "'Brush Script MT', cursive";
+    if (cleanFont.includes("brush script mt"))
+      return "'Brush Script MT', cursive";
     if (cleanFont.includes("comic sans ms")) return "Comic Sans MS";
     if (cleanFont.includes("impact")) return "Impact";
 
@@ -418,8 +419,8 @@ export default function Page() {
         />
 
         <KeyboardTools
-          language={language} 
-          setLanguage={setLanguage} 
+          language={language}
+          setLanguage={setLanguage}
           onDeleteAll={handleDeleteAll}
           onUndo={handleUndo}
           onSave={handleSave}
@@ -431,6 +432,11 @@ export default function Page() {
         />
 
         <div className={styles.keyboardArea}>
+          <Keyboard
+            onAddChar={handleAddChar}
+            onBackspace={handleBackspace}
+            language={language}
+          />
           <TextStyleTools
             currentStyle={currentStyle}
             onAlign={applyAlignment}
@@ -438,12 +444,6 @@ export default function Page() {
             onFontName={applyFontName}
             onFontColor={applyFontColor}
             onUnderline={applyUnderline}
-          />
-
-          <Keyboard
-            onAddChar={handleAddChar}
-            onBackspace={handleBackspace}
-            language={language}
           />
         </div>
       </div>
