@@ -1,19 +1,21 @@
 .keyboardContainer {
   width: 100%;
-  max-width: 760px;
+  max-width: 100%;
   text-align: center;
   margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.keyboardTitle {
-  margin-bottom: 16px;
+  margin-bottom: 0.6vh;
+  padding: 1vh 0.9vw;
+  background-color: rgba(255, 255, 255, 0.78);
+  border: 1px solid #dde3ec;
+  border-radius: 1.1rem;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
 }
 
 .keyboard {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.7vh;
   align-items: center;
   width: 100%;
 }
@@ -22,85 +24,99 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 0.45vw;
   flex-wrap: wrap;
 }
 
 .keyBtn {
-  min-width: 52px;
-  height: 52px;
-  padding: 0 12px;
-  font-size: 18px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  background-color: white;
+  min-width: 3.1rem;
+  min-height: 3.1rem;
+  padding: 0 0.7rem;
+  font-size: min(1.1rem, 2vw);
+  font-weight: 500;
+  color: #1f2937;
+  border: 1px solid #d3d9e3;
+  border-radius: 0.9rem;
+  background: #ffffff;
   cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .keyBtn:hover {
-  background-color: #f0f0f0;
+  background-color: #f8fafc;
+  border-color: #bfc8d6;
+  transform: translateY(-1px);
 }
 
 .specialBtn {
-  min-width: 90px;
-  height: 52px;
-  font-size: 16px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  background-color: #f7f7f7;
+  min-width: 5rem;
+  min-height: 3.1rem;
+  font-size: min(0.95rem, 1.8vw);
+  font-weight: 600;
+  color: #374151;
+  border: 1px solid #d3d9e3;
+  border-radius: 0.9rem;
+  background: #f8fafc;
   cursor: pointer;
-}
-
-.specialBtn:hover {
-  background-color: #ececec;
+  transition: all 0.18s ease;
 }
 
 .spaceBtn {
-  width: 320px;
-  max-width: 70%;
-  height: 52px;
-  font-size: 18px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  background-color: white;
+  width: min(42%, 20rem);
+  min-width: 14rem;
+  min-height: 3.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: min(1rem, 1.9vw);
+  font-weight: 500;
+  color: #1f2937;
+  border: 1px solid #d3d9e3;
+  border-radius: 0.9rem;
+  background: #ffffff;
   cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  white-space: nowrap;
 }
 
 .spaceBtn:hover {
-  background-color: #f0f0f0;
+  background-color: #f8fafc;
+  border-color: #bfc8d6;
 }
 
 .backspaceBtn {
-  min-width: 90px;
-  height: 52px;
-  font-size: 18px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  background-color: white;
+  min-width: 5rem;
+  min-height: 3.1rem;
+  font-size: min(1rem, 1.9vw);
+  font-weight: 600;
+  color: #374151;
+  border: 1px solid #d3d9e3;
+  border-radius: 0.9rem;
+  background: #fff7ed;
   cursor: pointer;
+  transition: all 0.18s ease;
 }
 
-.backspaceBtn:hover {
-  background-color: #f0f0f0;
-}
+@media (max-height: 750px) {
+  .keyboard {
+    gap: 0.55vh;
+  }
 
-@media (max-width: 768px) {
   .keyBtn {
-    min-width: 46px;
-    height: 46px;
-    font-size: 16px;
+    min-width: 2.8rem;
+    min-height: 2.8rem;
+    font-size: 1rem;
   }
 
   .specialBtn,
   .backspaceBtn {
-    min-width: 78px;
-    height: 46px;
-    font-size: 15px;
+    min-height: 2.8rem;
   }
 
   .spaceBtn {
-    width: 260px;
-    height: 46px;
-    font-size: 16px;
+    min-height: 3rem;
+    min-width: 12rem;
   }
 }

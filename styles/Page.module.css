@@ -1,13 +1,13 @@
 .page {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  padding: 30px 20px;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  padding: 1.5vh 2vw;
   box-sizing: border-box;
 }
 
 .wrapper {
-  width: 100%;
-  max-width: 1100px;
+  width: min(100%, 92vw);
+  max-width: 70rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -15,22 +15,26 @@
 }
 
 .title {
-  margin: 0 0 20px 0;
+  margin: 0 0 1.2vh 0;
   text-align: center;
+  font-size: min(2rem, 4vw);
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.02em;
 }
 
-.bottomArea {
+.keyboardArea {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 24px;
-  margin-top: 20px;
+  gap: 1.4vw;
+  margin-top: 0.8vh;
   flex-wrap: nowrap;
 }
 
-@media (max-width: 1000px) {
-  .bottomArea {
+@media (max-width: 900px) {
+  .keyboardArea {
     flex-direction: column;
     align-items: center;
   }

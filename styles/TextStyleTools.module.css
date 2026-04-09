@@ -1,37 +1,55 @@
 .toolsRow {
   display: flex;
-  flex-direction: column; /* מסדר את הכלים בטור אנכי */
-  gap: 16px;
-  width: auto;            /* חשוב: מבטל את ה-100% כדי שלא ידחף את המקלדת */
-  min-width: 160px;
+  flex-direction: column;
+  gap: 1.2vh;
+  width: 100%;
+  min-width: 15rem;
+  max-width: 18rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.82);
+  border: 1px solid #dde3ec;
+  border-radius: 1.1rem;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
 }
 
-
+.toolGroup {
+  display: flex;
+  justify-content: center;
+}
 
 .toolGroup button,
 .toolGroup select,
 .toolGroup input[type="color"] {
-  height: 44px;
-  min-width: 120px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  background-color: white;
+  min-height: 2.8rem;
+  width: 100%;
+  border: 1px solid #d3d9e3;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #1f2937;
   cursor: pointer;
-  font-size: 14px;
-  padding: 0 10px;
+  font-size: min(0.95rem, 1.8vw);
+  font-weight: 500;
+  padding: 0 0.8rem;
   box-sizing: border-box;
+  transition: all 0.18s ease;
 }
 
-.toolGroup select {
-  min-width: 150px;
+.toolGroup button:hover,
+.toolGroup select:hover,
+.toolGroup input[type="color"]:hover {
+  border-color: #bfc8d6;
+  background-color: #f8fafc;
+}
+
+.toolGroup button:focus,
+.toolGroup select:focus,
+.toolGroup input[type="color"]:focus {
+  outline: none;
+  border-color: #90b4f8;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
 .toolGroup input[type="color"] {
-  width: 90px;
-  padding: 4px;
-}
-
-.container {
-  width: 260px;
-  min-width: 260px;
+  padding: 0.25rem;
 }
