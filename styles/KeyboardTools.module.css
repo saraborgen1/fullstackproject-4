@@ -1,0 +1,29 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.toolButton {
+  min-width: 120px;
+  height: 46px;
+  border: 1px solid #555;
+  border-radius: 12px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.toolButton:hover {
+  background-color: #f0f0f0;
+}
+
+.active {
+  background-color: #e8e8e8;
+  font-weight: 600;
+}

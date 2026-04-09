@@ -1,0 +1,83 @@
+.keyboardContainer {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.keyboardTitle {
+  margin-bottom: 16px;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.keyboardRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.keyBtn {
+  min-width: 52px;
+  height: 52px;
+  padding: 0 12px;
+  font-size: 18px;
+  border: 1px solid #555;
+  border-radius: 10px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.keyBtn:hover {
+  background-color: #f0f0f0;
+}
+
+.specialBtn {
+  min-width: 90px;
+  height: 52px;
+  font-size: 16px;
+  border: 1px solid #555;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  cursor: pointer;
+}
+
+.specialBtn:hover {
+  background-color: #ececec;
+}
+
+.spaceBtn {
+  width: 320px;
+  max-width: 70%;
+  height: 52px;
+  font-size: 18px;
+  border: 1px solid #555;
+  border-radius: 10px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.spaceBtn:hover {
+  background-color: #f0f0f0;
+}
+
+.backspaceBtn {
+  min-width: 90px;
+  height: 52px;
+  font-size: 18px;
+  border: 1px solid #555;
+  border-radius: 10px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.backspaceBtn:hover {
+  background-color: #f0f0f0;
+}
