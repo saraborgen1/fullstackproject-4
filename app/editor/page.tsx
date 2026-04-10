@@ -707,7 +707,82 @@ export default function Page() {
   };
 
   const handleLogout = () => {
-    saveDocumentSessionForUser();
+    if (editorRef.current) {
+      const currentContent = editorRef.current.innerHTML;
+
+      documents[currentIndex].content = currentContent;
+    }
+
+    const username = getCurrentUsername();
+    if (!username) return;
+
+    const users = getUsersFromStorage();
+    const currentUser = users.find((user) => user.username === username);
+
+    const savedFiles = currentUser?.files ?? [];
+
+    const docsToCheck = [...documents];
+
+    for (let i = 0; i < docsToCheck.length; i++) {
+      const doc = docsToCheck[i];
+      const docContent = doc.content ?? "";
+
+      const matchingSavedFile = savedFiles.find((file) => file.name === doc.name);
+
+      const isUnsaved =
+        (!doc.name.trim() && docContent.trim() !== "") ||
+        (doc.name.trim() && !matchingSavedFile && docContent.trim() !== "") ||
+        (matchingSavedFile && matchingSavedFile.content !== docContent);
+
+      if (!isUnsaved) continue;
+
+      const shouldSave = confirm(
+        `Document "${doc.name || `Doc ${i + 1}`}" has unsaved changes. Do you want to save it before logout?`,
+      );
+
+      if (!shouldSave) continue;
+
+      let fileName = doc.name;
+
+      if (!fileName.trim()) {
+        const enteredName = prompt(`Enter file name for document ${i + 1}:`);
+        if (!enteredName || !enteredName.trim()) continue;
+        fileName = enteredName.trim();
+        docsToCheck[i] = { ...docsToCheck[i], name: fileName };
+      }
+
+      const existingFileIndex = savedFiles.findIndex((file) => file.name === fileName);
+
+      if (existingFileIndex !== -1) {
+        savedFiles[existingFileIndex] = {
+          ...savedFiles[existingFileIndex],
+          content: docsToCheck[i].content,
+          updatedAt: new Date().toISOString(),
+        };
+      } else {
+        savedFiles.push({
+          id: crypto.randomUUID(),
+          name: fileName,
+          content: docsToCheck[i].content,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    }
+
+    const userIndex = users.findIndex((user) => user.username === username);
+
+    if (userIndex !== -1) {
+      users[userIndex] = {
+        ...users[userIndex],
+        files: savedFiles,
+        openDocuments: docsToCheck,
+        closedDocuments,
+        currentIndex,
+      };
+
+      saveUsersToStorage(users);
+    }
+
     sessionStorage.removeItem("currentUser");
     router.replace("/login");
   };
