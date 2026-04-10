@@ -7,6 +7,7 @@ import KeyboardTools from "../../components/KeyboardTools";
 import TextStyleTools from "../../components/TextStyleTools";
 import styles from "../../styles/Page.module.css";
 import DocumentTabs from "../../components/DocumentTabs";
+import { HighlightTextDisplay } from "../../components/HighlightTextDisplay";
 import { useRouter } from "next/navigation";
 
 type SavedFile = {
@@ -697,6 +698,13 @@ export default function Page() {
 
     saveUsersToStorage(users);
   };
+  const handleSearchTermChange = (value: string) => {
+    setSearchTerm(value);
+
+    requestAnimationFrame(() => {
+      HighlightTextDisplay(editorRef.current, value);
+    });
+  };
 
   const handleLogout = () => {
     saveDocumentSessionForUser();
@@ -723,7 +731,6 @@ export default function Page() {
         <TextDisplay
           editorRef={editorRef}
           onSaveSelection={saveSelection}
-          searchTerm={searchTerm}
           setActiveInput={setActiveInput}
         />
 
@@ -739,7 +746,7 @@ export default function Page() {
           onReopenDocument={handleReopenDocument}
           closedDocuments={closedDocuments}
           searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          setSearchTerm={handleSearchTermChange}
           setActiveInput={setActiveInput}
         />
 
