@@ -741,26 +741,7 @@ export default function Page() {
 
   const router = useRouter();
 
-  const saveDocumentSessionForUser = () => {
-    const username = getCurrentUsername();
-    if (!username) return;
 
-    syncCurrentEditorToDocument();
-
-    const users = getUsersFromStorage();
-    const userIndex = users.findIndex((user) => user.username === username);
-
-    if (userIndex === -1) return;
-
-    users[userIndex] = {
-      ...users[userIndex],
-      openDocuments: documents,
-      closedDocuments,
-      currentIndex,
-    };
-
-    saveUsersToStorage(users);
-  };
   const handleSearchTermChange = (value: string) => {
     setSearchTerm(value);
 
@@ -785,6 +766,7 @@ export default function Page() {
     const savedFiles = currentUser?.files ?? [];
 
     const docsToCheck = [...documents];
+    const docsMarkedForRemoval = new Set<number>();
 
     for (let i = 0; i < docsToCheck.length; i++) {
       const doc = docsToCheck[i];
@@ -803,8 +785,10 @@ export default function Page() {
         `Document "${doc.name || `Doc ${i + 1}`}" has unsaved changes. Do you want to save it before logout?`,
       );
 
-      if (!shouldSave) continue;
-
+      if (!shouldSave) {
+        docsMarkedForRemoval.add(doc.id);
+        continue;
+      }
       let fileName = doc.name;
 
       if (!fileName.trim()) {
@@ -831,16 +815,38 @@ export default function Page() {
         });
       }
     }
+    const cleanedDocuments = docsToCheck.filter((doc) => {
+      if (docsMarkedForRemoval.has(doc.id)) {
+        return false;
+      }
 
+      const hasName = doc.name && doc.name.trim() !== "";
+      const hasContent = doc.content && doc.content.trim() !== "";
+
+      const matchingSavedFile = savedFiles.find((file) => file.name === doc.name);
+
+      if (!hasName && !hasContent) {
+        return false;
+      }
+
+      if (!matchingSavedFile) {
+        return false;
+      }
+
+      return true;
+    });
     const userIndex = users.findIndex((user) => user.username === username);
 
     if (userIndex !== -1) {
       users[userIndex] = {
         ...users[userIndex],
         files: savedFiles,
-        openDocuments: docsToCheck,
+        openDocuments: cleanedDocuments,
         closedDocuments,
-        currentIndex,
+        currentIndex:
+          cleanedDocuments.length === 0
+            ? 0
+            : Math.min(currentIndex, cleanedDocuments.length - 1),
       };
 
       saveUsersToStorage(users);
