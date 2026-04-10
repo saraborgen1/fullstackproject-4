@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import styles from "../styles/DocumentTabs.module.css";
 
 export default function DocumentTabs({
@@ -6,61 +7,98 @@ export default function DocumentTabs({
   currentIndex,
   onSelectDocument,
 }) {
-    const itemWidth = 150;
-    const gap = 40;
-    const viewportWidth = 900;
+  const itemWidth = 150;
+  const gap = 40;
 
-    const offset =
-    viewportWidth / 2 -
-    currentIndex * (itemWidth + gap) -
-    itemWidth / 2;
+  const viewportRef = useRef(null);
+  const [viewportWidth, setViewportWidth] = useState(0);
 
-    return (
+  useEffect(() => {
+    const updateWidth = () => {
+      if (viewportRef.current) {
+        setViewportWidth(viewportRef.current.clientWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  const maxIndex = documents.length - 1;
+
+  // הרוחב הכולל של הרשימה
+  const totalListWidth =
+    documents.length * itemWidth + Math.max(0, documents.length - 1) * gap;
+
+  // המרכז של הפריט הפעיל בתוך הרשימה
+  const activeItemCenter =
+    currentIndex * (itemWidth + gap) + itemWidth / 2;
+
+  // מיקום ההזזה הרצוי כדי שהפריט הפעיל יהיה במרכז ה-viewport
+  const desiredOffset = viewportWidth / 2 - activeItemCenter;
+
+  // גבולות חוקיים להזזה
+  const minOffset = Math.min(0, viewportWidth - totalListWidth);
+  const maxOffset = 0;
+
+  // clamp
+  const offset = Math.max(minOffset, Math.min(desiredOffset, maxOffset));
+
+  const handlePrev = () => {
+    if (currentIndex <= 0) return;
+    onSelectDocument(currentIndex - 1);
+  };
+
+  const handleNext = () => {
+    if (currentIndex >= maxIndex) return;
+    onSelectDocument(currentIndex + 1);
+  };
+
+  return (
     <div className={styles.wrapper}>
-        
-        <button
+      <button
+        type="button"
         className={styles.arrow}
-        onClick={() => onSelectDocument((i) => Math.max(i - 1, 0))}
-        >
+        onClick={handlePrev}
+        disabled={currentIndex === 0}
+      >
         ◀
-        </button>
+      </button>
 
-        <div className={styles.viewport}>
+      <div ref={viewportRef} className={styles.viewport}>
         <ul
-            className={styles.list}
-            style={{
+          className={styles.list}
+          style={{
             gap: `${gap}px`,
             transform: `translateX(${offset}px)`,
-            }}
+          }}
         >
-            {documents.map((doc, index) => (
+          {documents.map((doc, index) => (
             <li
-                key={doc.id}
-                onClick={() => onSelectDocument(index)}
-                className={`${styles.item} ${
-                index === currentIndex
-                    ? styles.active
-                    : styles.inactive
-                }`}
+              key={doc.id}
+              onClick={() => onSelectDocument(index)}
+              className={`${styles.item} ${
+                index === currentIndex ? styles.active : styles.inactive
+              }`}
             >
-                <div className={styles.title}>
+              <div className={styles.title}>
                 {doc.name || `Doc ${index + 1}`}
-                </div>
+              </div>
             </li>
-            ))}
+          ))}
         </ul>
-        </div>
+      </div>
 
-        <button
+      <button
+        type="button"
         className={styles.arrow}
-        onClick={() =>
-            onSelectDocument((i) =>
-            Math.min(i + 1, documents.length - 1)
-            )
-        }
-        >
+        onClick={handleNext}
+        disabled={currentIndex === maxIndex}
+      >
         ▶
-        </button>
+      </button>
     </div>
-    );
+  );
 }

@@ -3,44 +3,58 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 5px;
+  width: 100%;
 }
 
 .arrow {
   cursor: pointer;
   font-size: 18px;
+  background: none;
+  border: none;
+  flex: 0 0 auto;
+}
+
+.arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .viewport {
   overflow: hidden;
-  width: 70vw;
+  flex: 1;
+  min-width: 0;
 }
 
 .list {
   display: flex;
-  transition: 0.4s;
+  transition: transform 0.4s ease;
   list-style: none;
   padding: 0;
   margin: 0;
+  align-items: center;
+  width: max-content;
 }
 
 .item {
   width: 150px;
+  box-sizing: border-box;
   padding: 10px;
   border: 2px solid black;
   text-align: center;
   cursor: pointer;
   background: white;
-  transition: 0.3s;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  flex: 0 0 150px;
 }
 
 .active {
   opacity: 1;
-  transform: scale(1.4);
+  transform: scale(1.15);
 }
 
 .inactive {
-  opacity: 0.3;
-  transform: scale(0.8);
+  opacity: 0.45;
+  transform: scale(0.9);
 }
 
 .title {

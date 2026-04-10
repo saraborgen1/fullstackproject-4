@@ -109,7 +109,7 @@ export default function Page() {
           content: currentContent,
           history: updatedHistory,
         };
-      })
+      }),
     );
 
     setHistory((prev) => {
@@ -172,12 +172,12 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-            ...doc,
-            content: "",
-            history: [...(doc.history ?? [""]), ""].slice(-30),
-          }
-          : doc
-      )
+              ...doc,
+              content: "",
+              history: [...(doc.history ?? [""]), ""].slice(-30),
+            }
+          : doc,
+      ),
     );
 
     setHistory((prev) => [...prev, ""].slice(-30));
@@ -201,12 +201,12 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-            ...doc,
-            content: previousContent,
-            history: newHistory,
-          }
-          : doc
-      )
+              ...doc,
+              content: previousContent,
+              history: newHistory,
+            }
+          : doc,
+      ),
     );
 
     setHistory(newHistory);
@@ -388,10 +388,8 @@ export default function Page() {
 
     setDocuments((prev) =>
       prev.map((doc, index) =>
-        index === currentIndex
-          ? { ...doc, name: trimmedFileName }
-          : doc
-      )
+        index === currentIndex ? { ...doc, name: trimmedFileName } : doc,
+      ),
     );
 
     saveFileForUser(trimmedFileName);
@@ -435,10 +433,8 @@ export default function Page() {
 
         setDocuments((prev) =>
           prev.map((doc, index) =>
-            index === currentIndex
-              ? { ...doc, name: trimmedFileName }
-              : doc
-          )
+            index === currentIndex ? { ...doc, name: trimmedFileName } : doc,
+          ),
         );
 
         saveFileForUser(trimmedFileName);
@@ -475,17 +471,19 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-            ...doc,
-            content: currentContent,
-          }
-          : doc
-      )
+              ...doc,
+              content: currentContent,
+            }
+          : doc,
+      ),
     );
   };
 
   const handleSelectDocument = (index: number) => {
     syncCurrentEditorToDocument();
-    setCurrentIndex(index);
+
+    const safeIndex = Math.max(0, Math.min(index, documents.length - 1));
+    setCurrentIndex(safeIndex);
   };
 
   const handleReopenDocument = (docId: number) => {
@@ -497,9 +495,7 @@ export default function Page() {
 
     setDocuments((prev) => [...prev, docToReopen]);
 
-    setClosedDocuments((prev) =>
-      prev.filter((doc) => doc.id !== docId)
-    );
+    setClosedDocuments((prev) => prev.filter((doc) => doc.id !== docId));
 
     setCurrentIndex(documents.length);
     setSearchTerm("");
