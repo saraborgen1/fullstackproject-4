@@ -569,6 +569,69 @@ export default function Page() {
     setCurrentIndex(safeIndex);
   };
 
+  const handleDeleteCurrentDocumentPermanently = () => {
+    const currentDoc = documents[currentIndex];
+    if (!currentDoc) return;
+
+    const shouldDelete = confirm(
+      `Delete "${currentDoc.name || `Doc ${currentIndex + 1}`}" permanently?`,
+    );
+
+    if (!shouldDelete) return;
+
+    const username = getCurrentUsername();
+    const users = getUsersFromStorage();
+
+    if (username) {
+      const userIndex = users.findIndex((user) => user.username === username);
+
+      if (userIndex !== -1) {
+        users[userIndex] = {
+          ...users[userIndex],
+          files: users[userIndex].files.filter(
+            (file) => !(currentDoc.name && file.name === currentDoc.name),
+          ),
+          openDocuments: (users[userIndex].openDocuments || []).filter(
+            (doc) => doc.id !== currentDoc.id,
+          ),
+          closedDocuments: (users[userIndex].closedDocuments || []).filter(
+            (doc) => doc.id !== currentDoc.id,
+          ),
+        };
+
+        saveUsersToStorage(users);
+      }
+    }
+
+    if (documents.length === 1) {
+      setDocuments([
+        {
+          id: Date.now(),
+          name: "",
+          content: "",
+          history: [""],
+        },
+      ]);
+      setCurrentIndex(0);
+      setSearchTerm("");
+      setHistory([""]);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = "";
+      }
+      return;
+    }
+
+    const updatedDocuments = documents.filter((_, index) => index !== currentIndex);
+    setDocuments(updatedDocuments);
+
+    if (currentIndex >= updatedDocuments.length) {
+      setCurrentIndex(updatedDocuments.length - 1);
+    }
+
+    setSearchTerm("");
+    setHistory([""]);
+  };
+
   const handleReopenDocument = (docId: number) => {
     syncCurrentEditorToDocument();
 
@@ -818,6 +881,7 @@ export default function Page() {
           onSaveAs={handleSaveAs}
           onNewFile={handleNewFile}
           onCloseFile={handleCloseFile}
+          onDeleteCurrentDocument={handleDeleteCurrentDocumentPermanently}
           onReopenDocument={handleReopenDocument}
           closedDocuments={closedDocuments}
           searchTerm={searchTerm}

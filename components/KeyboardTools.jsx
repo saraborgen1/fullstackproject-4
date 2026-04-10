@@ -11,6 +11,7 @@ export default function KeyboardTools({
   onSaveAs,
   onNewFile,
   onCloseFile,
+  onDeleteCurrentDocument,
   onReopenDocument,
   closedDocuments,
   searchTerm,
@@ -95,6 +96,15 @@ export default function KeyboardTools({
         onClick={onNewFile}
       >
         New
+      </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onDeleteCurrentDocument}
+      >
+        Delete
       </button>
 
       <button
