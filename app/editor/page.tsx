@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TextDisplay from "../../components/TextDisplay";
 import Keyboard from "../../components/Keyboard";
 import KeyboardTools from "../../components/KeyboardTools";
 import TextStyleTools from "../../components/TextStyleTools";
 import styles from "../../styles/Page.module.css";
+import DocumentTabs from "../../components/DocumentTabs";
 
 type SavedFile = {
   id: string;
@@ -25,7 +26,25 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeInput, setActiveInput] = useState<"editor" | "search">("editor");
   const [history, setHistory] = useState<string[]>([]);
-  const [currentFileName, setCurrentFileName] = useState("");
+  const [documents, setDocuments] = useState([
+    {
+      id: 1,
+      name: "",
+      content: "",
+      history: [""],
+    },
+  ]);
+
+  const [closedDocuments, setClosedDocuments] = useState<
+    {
+      id: number;
+      name: string;
+      content: string;
+      history: string[];
+    }[]
+  >([]);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [currentStyle, setCurrentStyle] = useState({
     align: "left",
     fontSize: "14px",
@@ -33,6 +52,15 @@ export default function Page() {
     color: "#000000",
     underline: false,
   });
+
+  const activeDocument = documents[currentIndex];
+  const activeFileName = activeDocument?.name ?? "";
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    editorRef.current.innerHTML = activeDocument?.content ?? "";
+    setHistory(activeDocument?.history ?? [""]);
+  }, [currentIndex, activeDocument?.id]);
 
   const focusEditor = () => {
     setActiveInput("editor");
@@ -57,7 +85,32 @@ export default function Page() {
 
   const saveHistory = () => {
     if (!editorRef.current) return;
+
     const currentContent = editorRef.current.innerHTML;
+
+    setDocuments((prev) =>
+      prev.map((doc, index) => {
+        if (index !== currentIndex) return doc;
+
+        const currentHistory = doc.history ?? [""];
+
+        if (currentHistory[currentHistory.length - 1] === currentContent) {
+          return {
+            ...doc,
+            content: currentContent,
+          };
+        }
+
+        const updatedHistory = [...currentHistory, currentContent].slice(-30);
+
+        return {
+          ...doc,
+          content: currentContent,
+          history: updatedHistory,
+        };
+      })
+    );
+
     setHistory((prev) => {
       if (prev[prev.length - 1] === currentContent) return prev;
       return [...prev, currentContent].slice(-30);
@@ -111,19 +164,50 @@ export default function Page() {
 
   const handleDeleteAll = () => {
     if (!editorRef.current) return;
-    saveHistory();
+
     editorRef.current.innerHTML = "";
+
+    setDocuments((prev) =>
+      prev.map((doc, index) =>
+        index === currentIndex
+          ? {
+              ...doc,
+              content: "",
+              history: [...(doc.history ?? [""]), ""].slice(-30),
+            }
+          : doc
+      )
+    );
+
+    setHistory((prev) => [...prev, ""].slice(-30));
     focusEditor();
   };
 
   const handleUndo = () => {
-    if (!editorRef.current || history.length < 2) return;
+    if (!editorRef.current) return;
 
-    const newHistory = [...history];
+    const activeHistory = activeDocument?.history ?? [""];
+
+    if (activeHistory.length < 2) return;
+
+    const newHistory = [...activeHistory];
     newHistory.pop();
     const previousContent = newHistory[newHistory.length - 1] || "";
 
     editorRef.current.innerHTML = previousContent;
+
+    setDocuments((prev) =>
+      prev.map((doc, index) =>
+        index === currentIndex
+          ? {
+              ...doc,
+              content: previousContent,
+              history: newHistory,
+            }
+          : doc
+      )
+    );
+
     setHistory(newHistory);
     focusEditor();
   };
@@ -264,7 +348,6 @@ export default function Page() {
         files: [newFile],
       });
       saveUsersToStorage(users);
-      setCurrentFileName(fileName);
       alert(`File "${fileName}" saved successfully`);
       return;
     }
@@ -284,34 +367,141 @@ export default function Page() {
     }
 
     saveUsersToStorage(users);
-    setCurrentFileName(fileName);
     alert(`File "${fileName}" saved successfully`);
   };
 
   const handleSave = () => {
-    if (!currentFileName) {
+    if (!activeFileName) {
       handleSaveAs();
       return;
     }
 
-    saveFileForUser(currentFileName);
+    saveFileForUser(activeFileName);
   };
 
   const handleSaveAs = () => {
     const fileName = prompt("Enter file name:");
     if (!fileName || !fileName.trim()) return;
 
-    saveFileForUser(fileName.trim());
+    const trimmedFileName = fileName.trim();
+    
+    setDocuments((prev) =>
+      prev.map((doc, index) =>
+        index === currentIndex
+          ? { ...doc, name: trimmedFileName }
+          : doc
+      )
+    );
+
+    saveFileForUser(trimmedFileName);
   };
 
   const handleNewFile = () => {
-    if (!editorRef.current) return;
+   const newDocument = {
+      id: Date.now(),
+      name: "",
+      content: "",
+      history: [""],
+    };
 
-    editorRef.current.innerHTML = "";
-    setCurrentFileName("");
+    setDocuments((prev) => [...prev, newDocument]);
+    setCurrentIndex(documents.length);
     setSearchTerm("");
     setHistory([""]);
-    focusEditor();
+  };
+
+  const handleCloseFile = () => {
+    syncCurrentEditorToDocument();
+    if (!editorRef.current) return;
+
+    const currentContent = editorRef.current.innerHTML;
+    let finalFileName = activeFileName;
+
+    if (documents.length === 1) {
+      alert("You must keep at least one document open");
+      return;
+    }
+
+    const shouldSave = confirm("Do you want to save this file before closing?");
+
+    if (shouldSave) {
+      if (!activeFileName) {
+        const fileName = prompt("Enter file name:");
+        if (!fileName || !fileName.trim()) return;
+
+        const trimmedFileName = fileName.trim();
+        finalFileName = trimmedFileName;
+
+        setDocuments((prev) =>
+          prev.map((doc, index) =>
+            index === currentIndex
+              ? { ...doc, name: trimmedFileName }
+              : doc
+          )
+        );
+
+        saveFileForUser(trimmedFileName);
+      } else {
+        finalFileName = activeFileName;
+        saveFileForUser(activeFileName);
+      }
+    }
+
+    const currentDoc = documents[currentIndex];
+    const closedDoc = {
+      ...currentDoc,
+      name: finalFileName,
+      content: currentContent,
+    };
+
+    setClosedDocuments((prev) => [...prev, closedDoc]);
+    setDocuments((prev) => prev.filter((_, index) => index !== currentIndex));
+    setCurrentIndex((prev) => {
+      if (prev > 0) return prev - 1;
+      return 0;
+    });
+
+    setSearchTerm("");
+    setHistory([""]);
+  };
+
+  const syncCurrentEditorToDocument = () => {
+    if (!editorRef.current) return;
+
+    const currentContent = editorRef.current.innerHTML;
+
+    setDocuments((prev) =>
+      prev.map((doc, index) =>
+        index === currentIndex
+          ? {
+              ...doc,
+              content: currentContent,
+            }
+          : doc
+      )
+    );
+  };
+
+  const handleSelectDocument = (index: number) => {
+    syncCurrentEditorToDocument();
+    setCurrentIndex(index);
+  };
+
+  const handleReopenDocument = (docId: number) => {
+    syncCurrentEditorToDocument();
+
+    const docToReopen = closedDocuments.find((doc) => doc.id === docId);
+
+    if (!docToReopen) return;
+
+    setDocuments((prev) => [...prev, docToReopen]);
+
+    setClosedDocuments((prev) =>
+      prev.filter((doc) => doc.id !== docId)
+    );
+
+    setCurrentIndex(documents.length);
+    setSearchTerm("");
   };
 
   const rgbToHex = (rgb: string) => {
@@ -411,6 +601,12 @@ export default function Page() {
       <div className={styles.wrapper}>
         <h1 className={styles.title}>Visual Text Editor</h1>
 
+        <DocumentTabs
+          documents={documents}
+          currentIndex={currentIndex}
+          onSelectDocument={handleSelectDocument}
+        />
+
         <TextDisplay
           editorRef={editorRef}
           onSaveSelection={saveSelection}
@@ -426,6 +622,9 @@ export default function Page() {
           onSave={handleSave}
           onSaveAs={handleSaveAs}
           onNewFile={handleNewFile}
+          onCloseFile={handleCloseFile}
+          onReopenDocument={handleReopenDocument}
+          closedDocuments={closedDocuments}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           setActiveInput={setActiveInput}

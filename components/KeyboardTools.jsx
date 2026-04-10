@@ -10,6 +10,9 @@ export default function KeyboardTools({
   onSave,
   onSaveAs,
   onNewFile,
+  onCloseFile,
+  onReopenDocument,
+  closedDocuments,
   searchTerm,
   setSearchTerm,
   setActiveInput,
@@ -93,6 +96,29 @@ export default function KeyboardTools({
       >
         New
       </button>
+
+      <button
+        type="button"
+        className={styles.toolButton}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={onCloseFile}
+      >
+        Close
+      </button>
+
+      <select
+        onChange={(e) => {
+          if (!e.target.value) return;
+          onReopenDocument(Number(e.target.value));
+        }}
+      >
+        <option value="">Reopen...</option>
+        {closedDocuments.map((doc) => (
+          <option key={doc.id} value={doc.id}>
+            {doc.name || "Untitled"}
+          </option>
+        ))}
+      </select>
 
       <input
         type="text"

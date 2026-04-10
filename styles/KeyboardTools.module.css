@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  max-width: 1000px; /* היה קטן מדי */
+  max-width: 1200px; /* היה קטן מדי */
   display: flex;
   justify-content: center;
   align-items: center;

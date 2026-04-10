@@ -1,0 +1,53 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 5px;
+}
+
+.arrow {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.viewport {
+  overflow: hidden;
+  width: 70vw;
+}
+
+.list {
+  display: flex;
+  transition: 0.4s;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  width: 150px;
+  padding: 10px;
+  border: 2px solid black;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  transition: 0.3s;
+}
+
+.active {
+  opacity: 1;
+  transform: scale(1.4);
+}
+
+.inactive {
+  opacity: 0.3;
+  transform: scale(0.8);
+}
+
+.title {
+  font-weight: bold;
+}
+
+.preview {
+  font-size: 12px;
+  margin-top: 5px;
+}

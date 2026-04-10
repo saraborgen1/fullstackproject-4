@@ -113,6 +113,7 @@ export default function TextDisplay({
         ref={editorRef}
         className={styles.editor}
         contentEditable
+        dir="auto"
         suppressContentEditableWarning={true}
         data-placeholder="You can type here..."
         onMouseDown={() => setActiveInput("editor")}
