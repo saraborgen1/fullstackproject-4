@@ -7,6 +7,7 @@ import KeyboardTools from "../../components/KeyboardTools";
 import TextStyleTools from "../../components/TextStyleTools";
 import styles from "../../styles/Page.module.css";
 import DocumentTabs from "../../components/DocumentTabs";
+import { useRouter } from "next/navigation";
 
 type SavedFile = {
   id: string;
@@ -171,10 +172,10 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: "",
-              history: [...(doc.history ?? [""]), ""].slice(-30),
-            }
+            ...doc,
+            content: "",
+            history: [...(doc.history ?? [""]), ""].slice(-30),
+          }
           : doc
       )
     );
@@ -200,10 +201,10 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: previousContent,
-              history: newHistory,
-            }
+            ...doc,
+            content: previousContent,
+            history: newHistory,
+          }
           : doc
       )
     );
@@ -384,7 +385,7 @@ export default function Page() {
     if (!fileName || !fileName.trim()) return;
 
     const trimmedFileName = fileName.trim();
-    
+
     setDocuments((prev) =>
       prev.map((doc, index) =>
         index === currentIndex
@@ -397,7 +398,7 @@ export default function Page() {
   };
 
   const handleNewFile = () => {
-   const newDocument = {
+    const newDocument = {
       id: Date.now(),
       name: "",
       content: "",
@@ -474,9 +475,9 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: currentContent,
-            }
+            ...doc,
+            content: currentContent,
+          }
           : doc
       )
     );
@@ -596,10 +597,21 @@ export default function Page() {
     savedRangeRef.current = range.cloneRange();
   };
 
+  const router = useRouter();
+  const handleLogout = () => {
+    sessionStorage.removeItem("currentUser");
+    router.replace("/login");
+  };
+
   return (
     <main className={styles.page}>
       <div className={styles.wrapper}>
-        <h1 className={styles.title}>Visual Text Editor</h1>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Visual Text Editor</h1>
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
 
         <DocumentTabs
           documents={documents}
