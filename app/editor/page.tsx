@@ -15,9 +15,18 @@ type SavedFile = {
   content: string;
   updatedAt: string;
 };
+type SavedDocumentState = {
+  id: number;
+  name: string;
+  content: string;
+  history: string[];
+};
 type SavedUser = {
   username: string;
   files: SavedFile[];
+  openDocuments?: SavedDocumentState[];
+  closedDocuments?: SavedDocumentState[];
+  currentIndex?: number;
 };
 
 export default function Page() {
@@ -27,6 +36,7 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeInput, setActiveInput] = useState<"editor" | "search">("editor");
   const [history, setHistory] = useState<string[]>([]);
+  const [restoreVersion, setRestoreVersion] = useState(0);
   const [documents, setDocuments] = useState([
     {
       id: 1,
@@ -61,7 +71,7 @@ export default function Page() {
 
     editorRef.current.innerHTML = activeDocument?.content ?? "";
     setHistory(activeDocument?.history ?? [""]);
-  }, [currentIndex, activeDocument?.id]);
+  }, [currentIndex, activeDocument?.id, restoreVersion]);
 
   const focusEditor = () => {
     setActiveInput("editor");
@@ -172,10 +182,10 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: "",
-              history: [...(doc.history ?? [""]), ""].slice(-30),
-            }
+            ...doc,
+            content: "",
+            history: [...(doc.history ?? [""]), ""].slice(-30),
+          }
           : doc,
       ),
     );
@@ -201,10 +211,10 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: previousContent,
-              history: newHistory,
-            }
+            ...doc,
+            content: previousContent,
+            history: newHistory,
+          }
           : doc,
       ),
     );
@@ -327,6 +337,36 @@ export default function Page() {
     localStorage.setItem("users", JSON.stringify(users));
   };
 
+  useEffect(() => {
+    const username = sessionStorage.getItem("currentUser");
+    if (!username) return;
+
+    const users = getUsersFromStorage();
+    const currentUser = users.find((user) => user.username === username);
+
+    if (!currentUser) return;
+
+    if (currentUser.openDocuments && currentUser.openDocuments.length > 0) {
+      setDocuments(currentUser.openDocuments);
+    }
+
+    if (currentUser.closedDocuments) {
+      setClosedDocuments(currentUser.closedDocuments);
+    }
+
+    if (
+      typeof currentUser.currentIndex === "number" &&
+      currentUser.openDocuments &&
+      currentUser.currentIndex >= 0 &&
+      currentUser.currentIndex < currentUser.openDocuments.length
+    ) {
+      setCurrentIndex(currentUser.currentIndex);
+    } else {
+      setCurrentIndex(0);
+    }
+    setRestoreVersion((prev) => prev + 1);
+  }, []);
+
   const saveFileForUser = (fileName: string) => {
     const username = getCurrentUsername();
     if (!username || !editorRef.current) return;
@@ -417,7 +457,49 @@ export default function Page() {
     let finalFileName = activeFileName;
 
     if (documents.length === 1) {
-      alert("You must keep at least one document open");
+      const shouldSave = confirm("Do you want to save this file before closing?");
+
+      let finalFileName = activeFileName;
+
+      if (shouldSave) {
+        if (!activeFileName) {
+          const fileName = prompt("Enter file name:");
+          if (!fileName || !fileName.trim()) return;
+
+          const trimmedFileName = fileName.trim();
+          finalFileName = trimmedFileName;
+
+          setDocuments((prev) =>
+            prev.map((doc, index) =>
+              index === currentIndex ? { ...doc, name: trimmedFileName } : doc,
+            ),
+          );
+
+          saveFileForUser(trimmedFileName);
+        } else {
+          saveFileForUser(activeFileName);
+        }
+      }
+
+      const currentDoc = documents[currentIndex];
+      const closedDoc = {
+        ...currentDoc,
+        name: finalFileName,
+        content: currentContent,
+      };
+
+      setClosedDocuments((prev) => [...prev, closedDoc]);
+      setDocuments([
+        {
+          id: Date.now(),
+          name: "",
+          content: "",
+          history: [""],
+        },
+      ]);
+      setCurrentIndex(0);
+      setSearchTerm("");
+      setHistory([""]);
       return;
     }
 
@@ -471,9 +553,9 @@ export default function Page() {
       prev.map((doc, index) =>
         index === currentIndex
           ? {
-              ...doc,
-              content: currentContent,
-            }
+            ...doc,
+            content: currentContent,
+          }
           : doc,
       ),
     );
@@ -594,7 +676,30 @@ export default function Page() {
   };
 
   const router = useRouter();
+
+  const saveDocumentSessionForUser = () => {
+    const username = getCurrentUsername();
+    if (!username) return;
+
+    syncCurrentEditorToDocument();
+
+    const users = getUsersFromStorage();
+    const userIndex = users.findIndex((user) => user.username === username);
+
+    if (userIndex === -1) return;
+
+    users[userIndex] = {
+      ...users[userIndex],
+      openDocuments: documents,
+      closedDocuments,
+      currentIndex,
+    };
+
+    saveUsersToStorage(users);
+  };
+
   const handleLogout = () => {
+    saveDocumentSessionForUser();
     sessionStorage.removeItem("currentUser");
     router.replace("/login");
   };
