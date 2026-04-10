@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import styles from "../styles/DocumentTabs.module.css";
 
 export default function DocumentTabs({
@@ -9,51 +9,33 @@ export default function DocumentTabs({
 }) {
   const itemWidth = 150;
   const gap = 40;
-
   const viewportRef = useRef(null);
-  const [viewportWidth, setViewportWidth] = useState(0);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (viewportRef.current) {
-        setViewportWidth(viewportRef.current.clientWidth);
-      }
-    };
-
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
-
+  const itemRefs = useRef([]);
   const maxIndex = documents.length - 1;
 
-  // הרוחב הכולל של הרשימה
-  const totalListWidth =
-    documents.length * itemWidth + Math.max(0, documents.length - 1) * gap;
+  const scrollToDocument = (index) => {
+    const item = itemRefs.current[index];
+    if (!item) return;
 
-  // המרכז של הפריט הפעיל בתוך הרשימה
-  const activeItemCenter =
-    currentIndex * (itemWidth + gap) + itemWidth / 2;
-
-  // מיקום ההזזה הרצוי כדי שהפריט הפעיל יהיה במרכז ה-viewport
-  const desiredOffset = viewportWidth / 2 - activeItemCenter;
-
-  // גבולות חוקיים להזזה
-  const minOffset = Math.min(0, viewportWidth - totalListWidth);
-  const maxOffset = 0;
-
-  // clamp
-  const offset = Math.max(minOffset, Math.min(desiredOffset, maxOffset));
+    item.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
 
   const handlePrev = () => {
     if (currentIndex <= 0) return;
-    onSelectDocument(currentIndex - 1);
+    const newIndex = currentIndex - 1;
+    onSelectDocument(newIndex);
+    requestAnimationFrame(() => scrollToDocument(newIndex));
   };
 
   const handleNext = () => {
     if (currentIndex >= maxIndex) return;
-    onSelectDocument(currentIndex + 1);
+    const newIndex = currentIndex + 1;
+    onSelectDocument(newIndex);
+    requestAnimationFrame(() => scrollToDocument(newIndex));
   };
 
   return (
@@ -72,16 +54,30 @@ export default function DocumentTabs({
           className={styles.list}
           style={{
             gap: `${gap}px`,
-            transform: `translateX(${offset}px)`,
           }}
         >
           {documents.map((doc, index) => (
             <li
               key={doc.id}
-              onClick={() => onSelectDocument(index)}
-              className={`${styles.item} ${
-                index === currentIndex ? styles.active : styles.inactive
-              }`}
+              ref={(el) => {
+                itemRefs.current[index] = el;
+
+                if (el && index === currentIndex) {
+                  requestAnimationFrame(() => {
+                    el.scrollIntoView({
+                      behavior: "smooth",
+                      inline: "center",
+                      block: "nearest",
+                    });
+                  });
+                }
+              }}
+              onClick={() => {
+                onSelectDocument(index);
+                requestAnimationFrame(() => scrollToDocument(index));
+              }}
+              className={`${styles.item} ${index === currentIndex ? styles.active : styles.inactive
+                }`}
             >
               <div className={styles.title}>
                 {doc.name || `Doc ${index + 1}`}
